@@ -35,13 +35,12 @@ In this world the objects Ground and  player was placed without any relative obj
 
 What does it means? 
 
-1. The ground is in the origin of the coordinate system (0,0,0)
-2. Player is place in 10 units from the origin in the x-axes (10,0,0)
+1. The ground is in the origin of the coordinate system 
+2. Player is place in 10 units from the origin in the x-axes 
 
+$$ 
+Ground= \begin{bmatrix}0 \\ 0\\ 0 \end{bmatrix} 
+Player=\begin{bmatrix}10 \\ 0\\ 0 \end{bmatrix} 
+$$ (1) 
 
-
-
-
-
-
-
+3. World Space 
