@@ -107,19 +107,19 @@ $$
 $$
   
 
-  Know we can see that every point is transform by its local space but, it does not consider the global space parent  
+  Know we can see that every point is transform by its local space but, it does not consider the World space parent  
 
 $$
-\vec{P_{Global}}+A_{Global}\vec{X}_{local}= \vec{P_{Global}}+(A_{Global})(\vec{P_{Local}}+A_{Local}x)
+\vec{P_{World}}+A_{World}\vec{X}_{local}= \vec{P_{World}}+(A_{World})(\vec{P_{Local}}+A_{Local}x)
 $$
 
-Then for this instance we are replacing $A_{Global}$ = $A_{local}$ = I
+Then for this instance we are replacing $A_{World}$ = $A_{local}$ = I
 
 $$
-\vec{P_{Global}}+A_{Global}\vec{X}_{local}= \begin{bmatrix}0\\0\\0\end{bmatrix}_G+\begin{bmatrix}1 & 0 & 0 \\0 &1 &0 \\0 & 0 & 1 \end{bmatrix}_G \begin{bmatrix}   \begin{bmatrix}10\\0\\0\end{bmatrix}_L + \begin{bmatrix}1 & 0 & 0 \\0 &1 &0 \\0 & 0 & 1 \end{bmatrix}_L \begin{bmatrix}  x\\y\\z\end{bmatrix} \end{bmatrix} = \begin{bmatrix}0\\0\\0\end{bmatrix}+\begin{bmatrix}10+x\\0+y\\0+z\end{bmatrix} 
+\vec{P_{World}}+A_{World}\vec{X}_{local}= \begin{bmatrix}0\\0\\0\end{bmatrix}_W+\begin{bmatrix}1 & 0 & 0 \\0 &1 &0 \\0 & 0 & 1 \end{bmatrix}_W \begin{bmatrix}   \begin{bmatrix}10\\0\\0\end{bmatrix}_L + \begin{bmatrix}1 & 0 & 0 \\0 &1 &0 \\0 & 0 & 1 \end{bmatrix}_L \begin{bmatrix}  x\\y\\z\end{bmatrix} \end{bmatrix} = \begin{bmatrix}0\\0\\0\end{bmatrix}+\begin{bmatrix}10+x\\0+y\\0+z\end{bmatrix} 
 $$
 
-So for any vertex in the geometry will considere the local and global space.
+So for any vertex in the geometry will considere the local and World space.
 
 ## Transformations
 Until know we are working with 2 math concepts, first is a linear transformation and second vector translations.   
@@ -159,7 +159,7 @@ $$
 This function can not be expresed like a linear transformation in the form $\vec{W}=M\vec{U}$ for $R^3$ and this is the reason why our space until know has been  expreced as
 
 $$
-\vec{Y}=\vec{P_{Global}}+A_{Global}\vec{X}
+\vec{Y}=\vec{P_{World}}+A_{World}\vec{X}
 $$
 
 Remember P is our Origin of our space this is a fixed vector and the prodoct $Ax$ is other vector in $R^3$ so, our cordinate system was expressed as a linear transformation and vector translation.
@@ -241,12 +241,12 @@ $$
 In this way we can translate any point using a linear transformation changing the vector P in the matrix.
 
 
-## Put it all together In Global space
+## Put it all together In World space
 
 We saw in local space that it can be expresses like susetion of transformations
 
 $$
-\vec{Y} =\vec{P_{Global}}+A_{Global}\vec{X}_{local}= \vec{P_{Global}}+(A_{Global})(\vec{P_{Local}}+A_{Local}x)
+\vec{Y} =\vec{P_{World}}+A_{World}\vec{X}_{local}= \vec{P_{World}}+(A_{World})(\vec{P_{Local}}+A_{Local}x)
 $$
 
 Then we need rewrite the formula as a sussesions of linear transformations
@@ -255,7 +255,7 @@ $$
 \begin{bmatrix}\vec{Y} \\ 1\end{bmatrix}=H_{0}H_{1}H_{2}...H_{n}\vec{x}
 $$
 
-For our player example $H_n=G$ is our Global Space(Coordinate system, the vector $\vec{o}$ is the origin), $H_{n-1}=L$ is the player space (Local space, the vector $\vec{p}$ is the player position) 
+For our player example $H_n=G$ is our World Space(Coordinate system, the vector $\vec{o}$ is the origin), $H_{n-1}=L$ is the player space (Local space, the vector $\vec{p}$ is the player position) 
 
 $$
 \vec{Y} =\begin{bmatrix}
@@ -271,12 +271,115 @@ $$
             \\0 & 1 & 0 & 0_{0_y}
             \\0 & 0 & 1 & 0_{0_z}
             \\0 & 0 & 0 & 1
-    \end{bmatrix}_G
+    \end{bmatrix}_W
     \begin{bmatrix}x\\y\\z\\1\end{bmatrix}_{\vec{x}} = 
     \begin{bmatrix}x+10_{p_x}\\y+0_{p_y}\\z+0_{p_z}\\1\end{bmatrix}
 $$
 
-Note that our Global space is in the right side of maxtrix product. why we need to do that, because the local space does not to have transform the parent spaces, matrix product is not conmutative.
+Note that our World space is in the right side of maxtrix product. why we need to do that, because the local space does not to have transform the parent spaces, matrix product is not conmutative.
 
+## Camera Space
+As we see, every space has defined by a vector translation and a linear transformation
+$\vec{Y} =\vec{P}+A\vec{x} \backsim \begin{bmatrix}\vec{Y} \\ 1\end{bmatrix}=H\vec{x}$, and camera model should  be describe like a homogeneous matrix too. The camera has a location in a World space $\vec{c}$, this position should be the origin of the camera space. The three axis that form a orthonormal matrix, represents the orientation of the camera, this mean one of this axis should be the direction view. $\vec{v}_{direction}$, and exits other two vectors mutually perpendicular eachother then one of them is the the Up vector $\vec{u}_{}$ and the last vector $\vec{r}$ is defined by cross product $\vec{r}=\vec{v}\times\vec{u}$ , then $M=\begin{bmatrix}\vec{r} & \vec{u} & \vec{v}\end{bmatrix}$, Then we can write Any point $\vec{x} =\vec{c}+M\vec{y}$ solving this, Remember that M is orthonormal and property $M^{-1}=M^T, then \ \vec{y}=M^T(\vec{x}-\vec{c})$
+
+Then $H_{View \ Space}=\begin{bmatrix}M^T & -M^T\vec{c}\\\vec{0^T}&1\end{bmatrix}$
+and Any Homogeneous transformation can be describe like
+
+$$
+\\\vec{Y} =H\vec{x}   \to \begin{bmatrix}M^T & -M^T\vec{c}\\\vec{0^T}&1\end{bmatrix}\begin{bmatrix}\vec{x} \\ 1\end{bmatrix}=\begin{bmatrix}\vec{Y} \\ 1\end{bmatrix}
+$$
+
+Lets to Explain $H_{View Space}$: Basicly we want to describe the World space in term of the camera space, this mean that the origin of this spaces is the camera position and the coordinate axis are the orientation vectors of the camera
+
+$$
+M^T=\begin{bmatrix} \vec{r}.x & \vec{r}.y & \vec{r}.z \\ \vec{u}.x & \vec{u}.y & \vec{u}.z \\ \vec{v}.x & \vec{v}.y & \vec{v}.z \end{bmatrix}
+$$
+
+Translation vector $\vec{T}$ as we can see $-(M^T\vec{c})$ is an $Ax$ product this Transposed matrix has in its rows each vector axis, this mean that the operation of this product can be described by dot product of each axis with its position:  
+
+$$
+\vec{T}=-M^T\vec{c}=
+\begin{bmatrix}-(\vec{r} \cdot \vec{c}) \\ -(\vec{u} \cdot \vec{c}) \\ -(\vec{v} \cdot \vec{c}) \end{bmatrix}
+$$
+
+Then why the minus in the Translation vector?. This is because we want to bring the space to origin. so
+
+$$
+H_{ViewSpace}=\begin{bmatrix} \vec{r}.x & \vec{r}.y & \vec{r}.z & -(\vec{r} \cdot \vec{c})\\ \vec{u}.x & \vec{u}.y & \vec{u}.z & -(\vec{u} \cdot \vec{c})\\ \vec{v}.x & \vec{v}.y & \vec{v}.z & -(\vec{v} \cdot \vec{c}) \\ 0 & 0 & 0& 1\end{bmatrix}
+$$
+
+Positive view axis is going to the screen (this is the case for OpenGL)
+Example:
+
+$$
+\text{Camera position } \vec{c}= \begin{bmatrix} 5 \\ 5 \\ 5 \end{bmatrix}
+\text{LookAt position } \vec{p}= \begin{bmatrix} 5 \\ 0 \\ 0 \end{bmatrix}
+\newline
+$$
+Build the axes based on Camera position and lookat point. 
+
+$$
+\   
+\text{Camera axis } 
+\vec{r}= \begin{bmatrix} 1 \\ 0 \\ 0  \end{bmatrix}
+,\vec{u}= \begin{bmatrix} 0 \\ \frac{1} {\sqrt{2}} \\ -\frac{1} {\sqrt{2}} \end{bmatrix}
+\vec{v}= \begin{bmatrix} 0 \\ \frac{1} {\sqrt{2}} \\ \frac{1} {\sqrt{2}} \end{bmatrix}
+$$
+
+$$
+H=\begin{bmatrix} 1 & 0 & 0          & -(5)
+\\ 0 & \frac{1} {\sqrt{2}} & -\frac{1} {\sqrt{2}} & -(0)
+\\ 0 & \frac{1} {\sqrt{2}} & \frac{1} {\sqrt{2}} & -(\frac{10} {\sqrt{2}})
+ \\ 0 & 0 & 0& 1\end{bmatrix}
+$$
+Lets Test the Camera Target and camera position
+
+$$
+Target=\begin{bmatrix} 1 & 0 & 0          & -(5)
+\\ 0 & \frac{1} {\sqrt{2}} & -\frac{1} {\sqrt{2}} & -(0)
+\\ 0 & \frac{1} {\sqrt{2}} & \frac{1} {\sqrt{2}} & -(\frac{10} {\sqrt{2}})
+ \\ 0 & 0 & 0& 1\end{bmatrix}
+\begin{bmatrix}5  \\ 0 \\ 0 \\ 1\end{bmatrix}=
+\begin{bmatrix}0  \\ 0 \\ -(\frac{10} {\sqrt{2}}) \\ 1\end{bmatrix}
+$$
+
+$$
+Camera=\begin{bmatrix} 1 & 0 & 0          & -(5)
+\\ 0 & \frac{1} {\sqrt{2}} & -\frac{1} {\sqrt{2}} & -(0)
+\\ 0 & \frac{1} {\sqrt{2}} & \frac{1} {\sqrt{2}} & -(\frac{10} {\sqrt{2}})
+ \\ 0 & 0 & 0& 1\end{bmatrix}
+\begin{bmatrix}5  \\ 5 \\ 5 \\ 1\end{bmatrix}=
+\begin{bmatrix}0  \\ 0 \\ 0 \\ 1\end{bmatrix}
+$$
+
+Know you can see the camera position is the origin of the space, the target is infront of the camera, back to screen.
+
+So what happen with point if they lay back to the camera. lets to test the point $\text{Test point } \vec{x}= \begin{bmatrix} 5 \\ 10 \\ 10 \end{bmatrix}$
+
+$$
+Camera=\begin{bmatrix} 1 & 0 & 0          & -(5)
+\\ 0 & \frac{1} {\sqrt{2}} & -\frac{1} {\sqrt{2}} & -(0)
+\\ 0 & \frac{1} {\sqrt{2}} & \frac{1} {\sqrt{2}} & -(\frac{10} {\sqrt{2}})
+ \\ 0 & 0 & 0& 1\end{bmatrix}
+\begin{bmatrix}5  \\ 10 \\ 10 \\ 1\end{bmatrix}=
+\begin{bmatrix}0  \\ 0 \\ (\frac{10} {\sqrt{2}}) \\ 1\end{bmatrix}
+$$
+ Know you can see the vertex is in the positive side of view axis. 
+
+ And this is the reason why this matrix is called view space, because any vertex of world space is transformed into a new space by linear transformation.
+
+
+The pipeline For transforming any point of any world space into a view space is required a matrix product
+
+ $$
+ \vec{y} =(H_{ViewSpace})*(H_{WorldSpace})\vec{x}
+ $$
+
+ $$
+ \begin{bmatrix}\vec{y} \\ 1\end{bmatrix}=\begin{bmatrix}M^T & -M^T\vec{c}\\\vec{0^T}&1\end{bmatrix}
+\begin{bmatrix}M & \vec{p}\\\vec{0^T}&1\end{bmatrix}
+\begin{bmatrix}\vec{x} \\ 1\end{bmatrix}
+ 
+ $$
 
 
